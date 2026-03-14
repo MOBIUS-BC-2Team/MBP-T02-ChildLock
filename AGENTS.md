@@ -15,13 +15,6 @@ Requirements:
 3. compiler: GCC 11.4
 4. platform: Embedded Linux
 
-Testing Platform
-- Build: GCC 11.4 / C11
-- Unit Test: GoogleTest 1.12.1
-- Coverage: gcov(GCC11)
-- Static Analysis: cppcheck 2.10
-- OS: Ubuntu 22.04 runner
-
 Coding Rules:
 - Function Length : 80 lines
 - Cyclomatic Complexity : 10 or below

@@ -13,6 +13,8 @@
 
 namespace {
 
+// Helper to keep test bodies concise and focused on expectations.
+// Note: inputs are modeled as booleans to match the UC-2 flowchart decisions.
 static DoorOpenStatus EvaluateControlRearPassengerDoor(bool is_handle_pulled,
                                                        bool is_safety_valid,
                                                        bool is_latch_sensor_error,
@@ -29,6 +31,8 @@ static DoorOpenStatus EvaluateControlRearPassengerDoor(bool is_handle_pulled,
 
 }  // namespace
 
+// Each test toggles one condition to ensure independent blocking behavior.
+// Normal case: all conditions valid and child lock off should allow opening.
 TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
@@ -36,6 +40,7 @@ TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
 }
 
+// Edge case: handle not pulled always blocks.
 TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(false, true, false, false, false, false);
@@ -43,6 +48,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// Safety invalid must block even if handle is pulled.
 TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, false, false, false, false, false);
@@ -50,6 +56,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// Latch sensor error should block.
 TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, true, false, false, false);
@@ -57,6 +64,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// ECU error should block.
 TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, true, false, false);
@@ -64,6 +72,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// Power instability should block.
 TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, true, false);
@@ -71,6 +80,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// Child lock active should block.
 TEST(ControlRearPassengerDoor, BlocksWhenChildLockActive) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, true);

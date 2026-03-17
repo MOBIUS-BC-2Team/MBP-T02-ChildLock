@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker-ci:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Build and start development container
+        run: docker compose up -d --build mbp-t02-childlock-dev
+
+      - name: Run unit test and coverage in container
+        run: |
+          docker compose exec -T mbp-t02-childlock-dev bash -lc "
+            cd /workspace &&
+            make clean &&
+            make test &&
+            make coverage
+          "
+
+      - name: Run complexity check in container
+        run: |
+          docker compose exec -T mbp-t02-childlock-dev bash -lc "
+            cd /workspace &&
+            python3 -m lizard src include tests
+          "
+
+      - name: Stop and clean containers
+        if: always()
+        run: docker compose down --volumes --remove-orphans

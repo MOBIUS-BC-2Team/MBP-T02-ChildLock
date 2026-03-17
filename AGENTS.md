@@ -35,9 +35,18 @@ Coding Rules:
 
 Function Configuration:
 - Input Value
-  - **FlowChart에 작성한 내용 기입**
+  - detectRearDoorHandelPull
+  - isMainPowerAvailable
+  - isBackupPowerAvailable
 - Output Value
-  - **FlowChart에 작성한 내용 기입**
+  - releaseDoorLatch
+- No matter if a function is added
+
+Git:
+- If function is added or modified, git add and commit
+- Don't push remote repository
+- Adding commit message with following condition
+  - `feat: ...`, `fix: ...`, `docs: ...`, `chore: ...`, `test: ...`
 
 Deliverables:
 - implementation

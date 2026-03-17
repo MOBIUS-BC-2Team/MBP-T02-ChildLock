@@ -1,0 +1,20 @@
+version: "0.1"
+
+services:
+  mbp-t02-childlock-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mbp-t02-childlock-dev:latest
+    container_name: mbp-t02-childlock-dev
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      TZ: Asia/Seoul
+      CC: gcc-11
+      CXX: g++-11
+    volumes:
+      - ./:/workspace
+    command: ["tail", "-f", "/dev/null"]
+    restart: unless-stopped

@@ -9,8 +9,6 @@ project(
     DESCRIPTION "UC01 Electronic Child Lock System"
     LANGUAGES C CXX)
 
-include(FetchContent)
-
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -20,21 +18,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(CHILD_LOCK_ENABLE_COVERAGE "Enable gcov coverage flags" OFF)
+option(USE_SYSTEM_GTEST "Use preinstalled GoogleTest if available." ON)
+set(GTEST_SOURCE_DIR "" CACHE PATH "Optional local path to googletest source.")
 
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.12.1
-    GIT_SHALLOW TRUE)
+file(GLOB_RECURSE CHILD_LOCK_HEADERS CONFIGURE_DEPENDS
+    ${PROJECT_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE CHILD_LOCK_SOURCES CONFIGURE_DEPENDS
+    ${PROJECT_SOURCE_DIR}/src/*.c)
+file(GLOB_RECURSE CHILD_LOCK_CPP_TEST_SOURCES CONFIGURE_DEPENDS
+    ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+file(GLOB_RECURSE CHILD_LOCK_C_TEST_SOURCES CONFIGURE_DEPENDS
+    ${PROJECT_SOURCE_DIR}/tests/*.c)
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-enable_testing()
+if(MSVC)
+    set(CHILD_LOCK_STRICT_WARNINGS /W4 /WX)
+else()
+    set(CHILD_LOCK_STRICT_WARNINGS -Wall -Wextra -Werror -Wpedantic)
+endif()
 
 add_library(
     child_lock_system
-    src/child_lock_system.c)
+    ${CHILD_LOCK_SOURCES}
+    ${CHILD_LOCK_HEADERS})
 
 target_include_directories(
     child_lock_system
@@ -44,9 +49,7 @@ target_include_directories(
 target_compile_options(
     child_lock_system
     PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic)
+        ${CHILD_LOCK_STRICT_WARNINGS})
 
 if(CHILD_LOCK_ENABLE_COVERAGE)
     target_compile_options(
@@ -59,33 +62,101 @@ if(CHILD_LOCK_ENABLE_COVERAGE)
             --coverage)
 endif()
 
-add_executable(
-    child_lock_system_tests
-    tests/test_child_lock_system.cpp)
+enable_testing()
 
-target_link_libraries(
-    child_lock_system_tests
-    PRIVATE
-        child_lock_system
-        GTest::gtest_main)
+if(CHILD_LOCK_CPP_TEST_SOURCES)
+    if(USE_SYSTEM_GTEST)
+        find_package(GTest QUIET)
+    endif()
 
-target_compile_options(
-    child_lock_system_tests
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic)
+    if(NOT GTest_FOUND)
+        include(FetchContent)
+        if(GTEST_SOURCE_DIR)
+            FetchContent_Declare(
+                googletest
+                SOURCE_DIR ${GTEST_SOURCE_DIR})
+        else()
+            FetchContent_Declare(
+                googletest
+                URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+        endif()
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(googletest)
+    endif()
 
-if(CHILD_LOCK_ENABLE_COVERAGE)
+    add_executable(
+        child_lock_system_tests
+        ${CHILD_LOCK_CPP_TEST_SOURCES})
+
+    if(GTest_FOUND)
+        target_link_libraries(
+            child_lock_system_tests
+            PRIVATE
+                child_lock_system
+                GTest::gtest_main)
+    else()
+        target_link_libraries(
+            child_lock_system_tests
+            PRIVATE
+                child_lock_system
+                gtest_main)
+    endif()
+
     target_compile_options(
         child_lock_system_tests
         PRIVATE
-            --coverage)
-    target_link_options(
-        child_lock_system_tests
-        PRIVATE
-            --coverage)
+            ${CHILD_LOCK_STRICT_WARNINGS})
+
+    if(CHILD_LOCK_ENABLE_COVERAGE)
+        target_compile_options(
+            child_lock_system_tests
+            PRIVATE
+                --coverage)
+        target_link_options(
+            child_lock_system_tests
+            PRIVATE
+                --coverage)
+    endif()
+
+    include(GoogleTest)
+    gtest_discover_tests(child_lock_system_tests)
 endif()
 
-include(GoogleTest)
-gtest_discover_tests(child_lock_system_tests)
+foreach(child_lock_c_test_source IN LISTS CHILD_LOCK_C_TEST_SOURCES)
+    get_filename_component(child_lock_c_test_name
+        ${child_lock_c_test_source}
+        NAME_WE)
+    set(child_lock_c_test_target ${child_lock_c_test_name}_c_tests)
+
+    add_executable(
+        ${child_lock_c_test_target}
+        ${child_lock_c_test_source})
+    target_link_libraries(
+        ${child_lock_c_test_target}
+        PRIVATE
+            child_lock_system)
+    target_include_directories(
+        ${child_lock_c_test_target}
+        PRIVATE
+            ${PROJECT_SOURCE_DIR}/include)
+    target_compile_options(
+        ${child_lock_c_test_target}
+        PRIVATE
+            ${CHILD_LOCK_STRICT_WARNINGS})
+
+    if(CHILD_LOCK_ENABLE_COVERAGE)
+        target_compile_options(
+            ${child_lock_c_test_target}
+            PRIVATE
+                --coverage)
+        target_link_options(
+            ${child_lock_c_test_target}
+            PRIVATE
+                --coverage)
+    endif()
+
+    add_test(
+        NAME ${child_lock_c_test_target}
+        COMMAND ${child_lock_c_test_target})
+endforeach()

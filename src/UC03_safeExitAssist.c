@@ -8,7 +8,7 @@
  * * @details FlowChart 기반의 조건 분기점 및 예외 처리(Fail-Safe) 적용
  */
 
-#include "safe_exit_assist.h"
+#include "UC03_safeExitAssist.h"
 
 #define RISK_SPEED_THRESHOLD (6.0f) /* 위험 감지 임계 속도 (km/h) */
 

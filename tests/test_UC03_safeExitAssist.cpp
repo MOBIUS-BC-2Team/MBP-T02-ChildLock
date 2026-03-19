@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-    #include "safe_exit_assist.h"
+    #include "UC03_safeExitAssist.h"
 }
 
 // 1. 정상 흐름: 해제 요청이 없을 때는 잠금 유지, 경고 없음

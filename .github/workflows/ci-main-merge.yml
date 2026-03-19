@@ -36,6 +36,13 @@ jobs:
             make coverage
           "
 
+      - name: Run cppcheck in container
+        run: |
+          docker compose exec -T mbp-t02-childlock-dev bash -lc "
+            cd /workspace &&
+            make cppcheck
+          "
+
       - name: Run complexity check in container (CCN <= 10)
         run: |
           docker compose exec -T mbp-t02-childlock-dev bash -lc "

@@ -7,8 +7,9 @@ USE_SYSTEM_GTEST ?= ON
 ENABLE_COVERAGE ?= OFF
 LIZARD ?= python3 -m lizard
 CLOC ?= cloc
+CPPCHECK ?= cppcheck
 
-.PHONY: all configure build test clean rebuild coverage complexity loc quality
+.PHONY: all configure build test clean rebuild coverage complexity loc cppcheck quality
 
 all: test
 
@@ -32,7 +33,16 @@ complexity:
 loc:
 	$(CLOC) src include tests
 
-quality: complexity loc
+cppcheck:
+	$(CPPCHECK) \
+		--enable=warning,style,performance,portability \
+		--error-exitcode=1 \
+		--inline-suppr \
+		--suppress=missingIncludeSystem \
+		-Iinclude \
+		src include
+
+quality: cppcheck complexity loc
 
 rebuild: clean test
 

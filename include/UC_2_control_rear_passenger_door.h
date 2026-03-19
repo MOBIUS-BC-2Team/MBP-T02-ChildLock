@@ -1,5 +1,5 @@
 /**
- * @file control_rear_passenger_door.h
+ * @file UC_2_control_rear_passenger_door.h
  * @brief UC-2 based interface for controlling rear passenger door opening.
  * @date 2026-03-15
  * @time 15:46:22
@@ -18,8 +18,8 @@
  *   - doorOpenStatus: 0 (blocked), 1 (allowed)
  */
 
-#ifndef CONTROL_REAR_PASSENGER_DOOR_H
-#define CONTROL_REAR_PASSENGER_DOOR_H
+#ifndef UC_2_CONTROL_REAR_PASSENGER_DOOR_H
+#define UC_2_CONTROL_REAR_PASSENGER_DOOR_H
 
 #include <stdbool.h>
 
@@ -59,4 +59,4 @@ DoorOpenStatus control_rear_passenger_door(bool is_handle_pulled,
 }
 #endif
 
-#endif /* CONTROL_REAR_PASSENGER_DOOR_H */
+#endif /* UC_2_CONTROL_REAR_PASSENGER_DOOR_H */

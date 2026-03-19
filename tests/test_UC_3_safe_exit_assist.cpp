@@ -1,5 +1,5 @@
 /**
- * @file test_safe_exit_assist.cpp
+ * @file test_UC_3_safe_exit_assist.cpp
  * @brief 하차 안전 보조(SEA) 기능 단위 테스트 (GoogleTest)
  * @date 2026-03-15
  * @time 13:27
@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-    #include "safe_exit_assist.h"
+    #include "UC_3_safe_exit_assist.h"
 }
 
 // 1. 정상 흐름: 해제 요청이 없을 때는 잠금 유지, 경고 없음

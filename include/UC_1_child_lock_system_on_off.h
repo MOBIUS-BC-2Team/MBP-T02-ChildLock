@@ -1,5 +1,5 @@
 /**
- * @file child_lock_system.h
+ * @file UC_1_child_lock_system_on_off.h
  * @brief Public interface for UC01 electronic child lock toggle control.
  * @details
  * Implemented: 2026-03-17 13:15 KST
@@ -27,8 +27,8 @@
  * - faultLogNeeded
  */
 
-#ifndef CHILD_LOCK_SYSTEM_H
-#define CHILD_LOCK_SYSTEM_H
+#ifndef UC_1_CHILD_LOCK_SYSTEM_ON_OFF_H
+#define UC_1_CHILD_LOCK_SYSTEM_ON_OFF_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -181,4 +181,4 @@ ChildLockResultStatus ChildLockSystem_ProcessRequest(
 }
 #endif
 
-#endif /* CHILD_LOCK_SYSTEM_H */
+#endif /* UC_1_CHILD_LOCK_SYSTEM_ON_OFF_H */

@@ -1,5 +1,5 @@
 /**
- * @file child_lock_system.c
+ * @file UC_1_child_lock_system_on_off.c
  * @brief UC01 implementation for electronic child lock ON/OFF control.
  * @details
  * Implemented: 2026-03-17 13:30 KST
@@ -11,7 +11,9 @@
  * unlock reconfirmation, and processes ECU apply feedback.
  */
 
-#include "../include/child_lock_system.h"
+#include <stddef.h>
+
+#include "../include/UC_1_child_lock_system_on_off.h"
 
 /**
  * @brief HMI message shown when an unsupported door is requested.

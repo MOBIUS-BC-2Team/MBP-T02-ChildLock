@@ -1,5 +1,5 @@
 /**
- * @file safe_exit_assist.h
+ * @file UC_3_safe_exit_assist.h
  * @brief 하차 안전 보조(SEA) 기능 정의 헤더
  * @date 2026-03-15
  * @time 13:27
@@ -10,8 +10,8 @@
  * 도어 잠금을 강제로 유지하고 안전 경고를 발생시킨다.
  */
 
-#ifndef SAFE_EXIT_ASSIST_H
-#define SAFE_EXIT_ASSIST_H
+#ifndef UC_3_SAFE_EXIT_ASSIST_H
+#define UC_3_SAFE_EXIT_ASSIST_H
 
 #include <stdbool.h>
 
@@ -62,4 +62,4 @@ typedef struct {
  */
 SeaOutput_t Execute_Safe_Exit_Assist(bool unlock_request, float radar_object_speed, RadarStatus_e radar_status);
 
-#endif /* SAFE_EXIT_ASSIST_H */
+#endif /* UC_3_SAFE_EXIT_ASSIST_H */

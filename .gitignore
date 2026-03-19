@@ -1,0 +1,4 @@
+# CMake / local build artifacts
+build/
+cmake-build-*/
+

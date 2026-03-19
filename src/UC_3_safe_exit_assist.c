@@ -1,5 +1,5 @@
 /**
- * @file safe_exit_assist.c
+ * @file UC_3_safe_exit_assist.c
  * @brief 하차 안전 보조(SEA) 기능 로직 구현부
  * @date 2026-03-15
  * @time 13:27
@@ -8,7 +8,7 @@
  * * @details FlowChart 기반의 조건 분기점 및 예외 처리(Fail-Safe) 적용
  */
 
-#include "safe_exit_assist.h"
+#include "UC_3_safe_exit_assist.h"
 
 #define RISK_SPEED_THRESHOLD (6.0f) /* 위험 감지 임계 속도 (km/h) */
 

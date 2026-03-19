@@ -1,5 +1,5 @@
 /**
- * @file test_child_lock_system.cpp
+ * @file test_UC_1_child_lock_system_on_off.cpp
  * @brief GoogleTest unit tests for the UC01 child lock toggle service.
  * @details
  * Implemented: 2026-03-17 14:05 KST
@@ -16,7 +16,7 @@
 
 extern "C"
 {
-#include "../include/child_lock_system.h"
+#include "../include/UC_1_child_lock_system_on_off.h"
 }
 
 namespace

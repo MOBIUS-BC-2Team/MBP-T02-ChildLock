@@ -1,6 +1,6 @@
 /**
- * @file control_rear_passenger_door.c
- * @brief UC-2 based implementation for rear passenger door control.
+ * @file UC_2_control_rear_passenger_door.h
+ * @brief UC-2 based interface for controlling rear passenger door opening.
  * @date 2026-03-15
  * @time 15:46:22
  * @model MBP-T02-ChildLock
@@ -18,10 +18,27 @@
  *   - doorOpenStatus: 0 (blocked), 1 (allowed)
  */
 
-#include "control_rear_passenger_door.h"
+#ifndef UC_2_CONTROL_REAR_PASSENGER_DOOR_H
+#define UC_2_CONTROL_REAR_PASSENGER_DOOR_H
+
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Rear passenger door open status.
+ */
+typedef enum {
+    DOOR_OPEN_BLOCKED = 0,
+    DOOR_OPEN_ALLOWED = 1
+} DoorOpenStatus;
 
 /**
  * @brief Determine whether the rear passenger door may open.
+ *
+ * The decision follows the UC-2 flowchart and SwRS safety constraints.
  *
  * @param is_handle_pulled True when the inside handle is pulled.
  * @param is_safety_valid True when vehicle safety conditions are valid.
@@ -36,31 +53,10 @@ DoorOpenStatus control_rear_passenger_door(bool is_handle_pulled,
                                           bool is_latch_sensor_error,
                                           bool is_ecu_error,
                                           bool is_power_error,
-                                          bool is_child_lock_active) {
-    if (!is_handle_pulled) {
-        return DOOR_OPEN_BLOCKED;
-    }
+                                          bool is_child_lock_active);
 
-    /* Fail-safe: any unsafe or faulty condition blocks opening. */
-    if (!is_safety_valid) {
-        return DOOR_OPEN_BLOCKED;
-    }
-
-    if (is_latch_sensor_error) {
-        return DOOR_OPEN_BLOCKED;
-    }
-
-    if (is_ecu_error) {
-        return DOOR_OPEN_BLOCKED;
-    }
-
-    if (is_power_error) {
-        return DOOR_OPEN_BLOCKED;
-    }
-
-    if (is_child_lock_active) {
-        return DOOR_OPEN_BLOCKED;
-    }
-
-    return DOOR_OPEN_ALLOWED;
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* UC_2_CONTROL_REAR_PASSENGER_DOOR_H */

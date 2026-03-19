@@ -1,5 +1,5 @@
 /**
- * @file test_control_rear_passenger_door.cpp
+ * @file test_UC_2_control_rear_passenger_door.cpp
  * @brief Unit tests for UC-2 based rear passenger door control logic.
  * @date 2026-03-15
  * @time 15:46:22
@@ -7,7 +7,7 @@
  * @version v1.0
  */
 
-#include "control_rear_passenger_door.h"
+#include "UC_2_control_rear_passenger_door.h"
 
 #include <gtest/gtest.h>
 

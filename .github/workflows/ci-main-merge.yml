@@ -36,11 +36,26 @@ jobs:
             make coverage
           "
 
-      - name: Run complexity check in container
+      - name: Run cppcheck in container
         run: |
           docker compose exec -T mbp-t02-childlock-dev bash -lc "
             cd /workspace &&
-            python3 -m lizard src include tests
+            make cppcheck
+          "
+
+      - name: Run complexity check in container (CCN <= 10)
+        run: |
+          docker compose exec -T mbp-t02-childlock-dev bash -lc "
+            cd /workspace &&
+            make complexity
+          "
+
+      - name: Run LOC report in container
+        if: always()
+        run: |
+          docker compose exec -T mbp-t02-childlock-dev bash -lc "
+            cd /workspace &&
+            make loc
           "
 
       - name: Stop and clean containers

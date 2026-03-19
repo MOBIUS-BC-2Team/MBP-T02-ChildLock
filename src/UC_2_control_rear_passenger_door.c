@@ -1,5 +1,5 @@
 /**
- * @file control_rear_passenger_door.c
+ * @file UC_2_control_rear_passenger_door.c
  * @brief UC-2 based implementation for rear passenger door control.
  * @date 2026-03-15
  * @time 15:46:22
@@ -18,7 +18,7 @@
  *   - doorOpenStatus: 0 (blocked), 1 (allowed)
  */
 
-#include "control_rear_passenger_door.h"
+#include "UC_2_control_rear_passenger_door.h"
 
 /**
  * @brief Determine whether the rear passenger door may open.

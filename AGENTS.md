@@ -33,15 +33,6 @@ Coding Rules:
   - Tests must cover normal and edge cases
 - Line Coverage : 80% or more
 
-Function Configuration:
-- Input Value
-  - detectRearDoorHandelPull
-  - isMainPowerAvailable
-  - isBackupPowerAvailable
-- Output Value
-  - releaseDoorLatch
-- No matter if a function is added
-
 Git:
 - If function is added or modified, git add and commit
 - Don't push remote repository

@@ -1,29 +1,40 @@
-# Makefile for MBP-T02-ChildLock UC05 unit test and coverage workflow
+# Makefile wrapper for CMake-based build/test workflow
 
-CC ?= gcc-11
-CFLAGS ?= -std=c11 -Wall -Wextra -Werror -pedantic -Iinclude
-LDFLAGS ?=
-GCOV ?= gcov-11
+CMAKE ?= cmake
+CTEST ?= ctest
+BUILD_DIR ?= build
+USE_SYSTEM_GTEST ?= ON
+ENABLE_COVERAGE ?= OFF
+LIZARD ?= python3 -m lizard
+CLOC ?= cloc
 
-TEST_BIN := tests/test_child_lock
-COVERAGE_GCNO := $(TEST_BIN)-child_lock.gcno
-
-.PHONY: all test clean coverage
+.PHONY: all configure build test clean rebuild coverage complexity loc quality
 
 all: test
 
-$(TEST_BIN): tests/test_child_lock.c src/child_lock.c include/child_lock.h
-	$(CC) $(CFLAGS) tests/test_child_lock.c src/child_lock.c $(LDFLAGS) -o $(TEST_BIN)
+configure:
+	$(CMAKE) -S . -B $(BUILD_DIR) \
+		-DUSE_SYSTEM_GTEST=$(USE_SYSTEM_GTEST) \
+		-DCHILD_LOCK_ENABLE_COVERAGE=$(ENABLE_COVERAGE)
 
-test: $(TEST_BIN)
-	./$(TEST_BIN)
+build: configure
+	$(CMAKE) --build $(BUILD_DIR)
 
-coverage: CFLAGS += --coverage -O0
-coverage: LDFLAGS += --coverage
-coverage: clean $(TEST_BIN)
-	./$(TEST_BIN)
-	$(GCOV) -b -c $(COVERAGE_GCNO)
+test: build
+	$(CTEST) --test-dir $(BUILD_DIR) --output-on-failure
+
+coverage: clean
+	$(MAKE) test ENABLE_COVERAGE=ON
+
+complexity:
+	$(LIZARD) -C 10 src include tests
+
+loc:
+	$(CLOC) src include tests
+
+quality: complexity loc
+
+rebuild: clean test
 
 clean:
-	rm -f $(TEST_BIN) *.gcov
-	rm -f src/*.gcda src/*.gcno tests/*.gcda tests/*.gcno
+	$(CMAKE) -E rm -rf $(BUILD_DIR)

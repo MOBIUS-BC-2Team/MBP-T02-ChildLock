@@ -44,43 +44,43 @@ bool EvaluateReleaseDoorLatch(bool detect_rear_door_handle_pull,
 
 } /* namespace */
 
-// 테스트 목적: UC5EmergencyGuidance.KeepsLatchLockedWhenHandleIsIdle 동작 검증
+// [TC-UC05-001] 테스트 목적: 핸들 요청이 없을 때 전자 래치 해제 금지 검증
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenHandleIsIdle)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, true, true));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.ReleasesLatchWhenHandlePulledAndMainPowerAvailable 동작 검증
+// [TC-UC05-002] 테스트 목적: 핸들 요청 + 메인 전원 정상 시 래치 해제 허용 검증
 TEST(UC5EmergencyGuidance, ReleasesLatchWhenHandlePulledAndMainPowerAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, false));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.MainPowerDominatesEvenWhenBackupAlsoAvailable 동작 검증
+// [TC-UC05-005] 테스트 목적: 백업 전원 유무와 무관한 메인 전원 우선 동작 검증
 TEST(UC5EmergencyGuidance, MainPowerDominatesEvenWhenBackupAlsoAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, true));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.DoesNotReleaseWhenOnlyBackupPowerIsAvailable 동작 검증
+// [TC-UC05-003] 테스트 목적: 메인 전원 상실 + 백업 전원만 존재 시 해제 금지 검증
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenOnlyBackupPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, true));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.DoesNotReleaseWhenNoPowerIsAvailable 동작 검증
+// [TC-UC05-004] 테스트 목적: 전체 전원 상실 시 전자 래치 해제 금지 검증
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenNoPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, false));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.KeepsLatchLockedWhenNoRequestAndNoPower 동작 검증
+// [TC-UC05-006] 테스트 목적: 핸들 미요청 경계에서 즉시 해제 금지 검증
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenNoRequestAndNoPower)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, false, false));
 }
 
-// 테스트 목적: UC5EmergencyGuidance.BackupPowerToggleDoesNotChangeDecisionWhenMainPowerIsOn 동작 검증
+// [TC-UC05-007] 테스트 목적: 메인 전원 정상 시 백업 전원 토글 불변성 검증
 TEST(UC5EmergencyGuidance, BackupPowerToggleDoesNotChangeDecisionWhenMainPowerIsOn)
 {
     const bool result_without_backup = EvaluateReleaseDoorLatch(true, true, false);

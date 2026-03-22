@@ -44,7 +44,7 @@ ChildLockRequest MakeValidRequest()
     return request;
 }
 
-// 테스트 목적: ChildLockSystemHelpers.InitRequestSetsSafeDefaults 동작 검증
+// [TC-N/A] 테스트 목적: 요청 구조체 기본값 초기화 동작 검증
 TEST(ChildLockSystemHelpers, InitRequestSetsSafeDefaults)
 {
     ChildLockRequest request;
@@ -63,7 +63,7 @@ TEST(ChildLockSystemHelpers, InitRequestSetsSafeDefaults)
     EXPECT_EQ(CHILD_LOCK_APPLY_SUCCESS, request.apply_result);
 }
 
-// 테스트 목적: ChildLockSystemHelpers.InitResponseKeepsCurrentState 동작 검증
+// [TC-N/A] 테스트 목적: 응답 구조체 기본값 및 현재 상태 유지 검증
 TEST(ChildLockSystemHelpers, InitResponseKeepsCurrentState)
 {
     ChildLockResponse response;
@@ -80,34 +80,34 @@ TEST(ChildLockSystemHelpers, InitResponseKeepsCurrentState)
     EXPECT_FALSE(response.status_update_needed);
 }
 
-// 테스트 목적: ChildLockSystemHelpers.DoorValidationAcceptsRearDoors 동작 검증
+// [TC-N/A] 테스트 목적: 유효 도어(RL/RR) 판정 로직 검증
 TEST(ChildLockSystemHelpers, DoorValidationAcceptsRearDoors)
 {
     EXPECT_TRUE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_RL));
     EXPECT_TRUE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_RR));
 }
 
-// 테스트 목적: ChildLockSystemHelpers.DoorValidationRejectsInvalidDoor 동작 검증
+// [TC-N/A] 테스트 목적: 비유효 도어 판정 로직 검증
 TEST(ChildLockSystemHelpers, DoorValidationRejectsInvalidDoor)
 {
     EXPECT_FALSE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_INVALID));
 }
 
-// 테스트 목적: ChildLockSystemHelpers.ToggleStateTurnsOffToOn 동작 검증
+// [TC-N/A] 테스트 목적: 상태 토글(OFF->ON) 헬퍼 로직 검증
 TEST(ChildLockSystemHelpers, ToggleStateTurnsOffToOn)
 {
     EXPECT_EQ(CHILD_LOCK_STATE_ON,
               ChildLockSystem_ToggleState(CHILD_LOCK_STATE_OFF));
 }
 
-// 테스트 목적: ChildLockSystemHelpers.ToggleStateTurnsOnToOff 동작 검증
+// [TC-N/A] 테스트 목적: 상태 토글(ON->OFF) 헬퍼 로직 검증
 TEST(ChildLockSystemHelpers, ToggleStateTurnsOnToOff)
 {
     EXPECT_EQ(CHILD_LOCK_STATE_OFF,
               ChildLockSystem_ToggleState(CHILD_LOCK_STATE_ON));
 }
 
-// 테스트 목적: ChildLockSystemProcess.RejectsNullRequest 동작 검증
+// [TC-N/A] 테스트 목적: NULL 요청 포인터 방어 로직 검증
 TEST(ChildLockSystemProcess, RejectsNullRequest)
 {
     ChildLockResponse response;
@@ -120,7 +120,7 @@ TEST(ChildLockSystemProcess, RejectsNullRequest)
     EXPECT_FALSE(response.command_sent);
 }
 
-// 테스트 목적: ChildLockSystemProcess.RejectsNullResponse 동작 검증
+// [TC-N/A] 테스트 목적: NULL 응답 포인터 방어 로직 검증
 TEST(ChildLockSystemProcess, RejectsNullResponse)
 {
     const ChildLockRequest request = MakeValidRequest();
@@ -129,7 +129,7 @@ TEST(ChildLockSystemProcess, RejectsNullResponse)
               ChildLockSystem_ProcessRequest(&request, nullptr));
 }
 
-// 테스트 목적: ChildLockSystemProcess.RejectsInvalidDoor 동작 검증
+// [TC-UC01-002] 테스트 목적: 비유효 도어 ID 요청 차단 검증
 TEST(ChildLockSystemProcess, RejectsInvalidDoor)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -144,7 +144,7 @@ TEST(ChildLockSystemProcess, RejectsInvalidDoor)
     EXPECT_STREQ("지원하지 않는 도어입니다.", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksAccOff 동작 검증
+// [TC-UC01-003] 테스트 목적: ACC OFF 조건에서 설정 변경 차단 검증
 TEST(ChildLockSystemProcess, BlocksAccOff)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -159,7 +159,7 @@ TEST(ChildLockSystemProcess, BlocksAccOff)
     EXPECT_STREQ("ACC OFF: 설정 변경 불가", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsNonZero 동작 검증
+// [TC-UC01-005] 테스트 목적: 주행 중(속도 > 0) 설정 변경 차단 동등 클래스 검증
 TEST(ChildLockSystemProcess, BlocksWhenSpeedIsNonZero)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -174,7 +174,7 @@ TEST(ChildLockSystemProcess, BlocksWhenSpeedIsNonZero)
     EXPECT_STREQ("정차 후 변경 가능", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsOneBoundary 동작 검증
+// [TC-UC01-005] 테스트 목적: 속도 경계값 1kph에서 설정 변경 차단 검증
 TEST(ChildLockSystemProcess, BlocksWhenSpeedIsOneBoundary)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -189,7 +189,7 @@ TEST(ChildLockSystemProcess, BlocksWhenSpeedIsOneBoundary)
     EXPECT_STREQ("정차 후 변경 가능", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsUint16MaxBoundary 동작 검증
+// [TC-UC01-012] 테스트 목적: 속도 상한값(65535) 입력 시 안전 차단 검증
 TEST(ChildLockSystemProcess, BlocksWhenSpeedIsUint16MaxBoundary)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -203,7 +203,7 @@ TEST(ChildLockSystemProcess, BlocksWhenSpeedIsUint16MaxBoundary)
     EXPECT_FALSE(response.command_sent);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksOnCrashOverride 동작 검증
+// [TC-UC01-006] 테스트 목적: 사고 감지(crash override) 시 설정 변경 차단 검증
 TEST(ChildLockSystemProcess, BlocksOnCrashOverride)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -219,7 +219,7 @@ TEST(ChildLockSystemProcess, BlocksOnCrashOverride)
                  response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.BlocksOnPowerLoss 동작 검증
+// [TC-UC01-007] 테스트 목적: 전원 불안정(power loss) 시 설정 변경 차단 검증
 TEST(ChildLockSystemProcess, BlocksOnPowerLoss)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -234,7 +234,7 @@ TEST(ChildLockSystemProcess, BlocksOnPowerLoss)
     EXPECT_STREQ("전원 불안정: 설정 변경 불가", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.SucceedsForSafeLockEnable 동작 검증
+// [TC-UC01-001][TC-UC01-004] 테스트 목적: 정상 조건 및 속도 0 경계에서 잠금 활성화 성공 검증
 TEST(ChildLockSystemProcess, SucceedsForSafeLockEnable)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -250,7 +250,7 @@ TEST(ChildLockSystemProcess, SucceedsForSafeLockEnable)
     EXPECT_EQ(nullptr, response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.RequiresReconfirmationForRiskyUnlock 동작 검증
+// [TC-UC01-008] 테스트 목적: SEA 위험 조건의 해제 요청 시 재확인 요구 검증
 TEST(ChildLockSystemProcess, RequiresReconfirmationForRiskyUnlock)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -269,7 +269,7 @@ TEST(ChildLockSystemProcess, RequiresReconfirmationForRiskyUnlock)
     EXPECT_STREQ("후석 접근 감지: 재조작시 해제", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.AllowsRiskyUnlockAfterReconfirm 동작 검증
+// [TC-UC01-009] 테스트 목적: 재확인 후 위험 조건 해제 허용 경로 검증
 TEST(ChildLockSystemProcess, AllowsRiskyUnlockAfterReconfirm)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -287,7 +287,7 @@ TEST(ChildLockSystemProcess, AllowsRiskyUnlockAfterReconfirm)
     EXPECT_TRUE(response.status_update_needed);
 }
 
-// 테스트 목적: ChildLockSystemProcess.AllowsRiskStateWhenTargetIsOn 동작 검증
+// [TC-N/A] 테스트 목적: SEA 위험이어도 목표가 ON이면 허용되는 분기 검증
 TEST(ChildLockSystemProcess, AllowsRiskStateWhenTargetIsOn)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -302,7 +302,7 @@ TEST(ChildLockSystemProcess, AllowsRiskStateWhenTargetIsOn)
     EXPECT_TRUE(response.command_sent);
 }
 
-// 테스트 목적: ChildLockSystemProcess.ReportsApplyFail 동작 검증
+// [TC-UC01-010] 테스트 목적: 도어 ECU 적용 실패(APPLY_FAIL) 처리 검증
 TEST(ChildLockSystemProcess, ReportsApplyFail)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -320,7 +320,7 @@ TEST(ChildLockSystemProcess, ReportsApplyFail)
     EXPECT_STREQ("설정 실패 (도어 장치 오류)", response.display_message);
 }
 
-// 테스트 목적: ChildLockSystemProcess.ReportsApplyTimeout 동작 검증
+// [TC-UC01-011] 테스트 목적: 도어 ECU 타임아웃(APPLY_TIMEOUT) 처리 검증
 TEST(ChildLockSystemProcess, ReportsApplyTimeout)
 {
     ChildLockRequest request = MakeValidRequest();

@@ -31,8 +31,7 @@ static DoorOpenStatus EvaluateControlRearPassengerDoor(bool is_handle_pulled,
 
 }  // namespace
 
-// Each test toggles one condition to ensure independent blocking behavior.
-// Normal case: all conditions valid and child lock off should allow opening.
+// [TC-UC02-001] 테스트 목적: 모든 조건 정상 + 차일드락 OFF에서 도어 개방 허용 검증
 TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
@@ -40,7 +39,7 @@ TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
 }
 
-// Edge case: handle not pulled always blocks.
+// [TC-UC02-002] 테스트 목적: 실내 핸들 미조작 경계에서 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(false, true, false, false, false, false);
@@ -48,7 +47,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Boundary case: handle pulled allows evaluation to continue.
+// [TC-UC02-003] 테스트 목적: 실내 핸들 조작 경계에서 다음 안전 조건 평가 진행 검증
 TEST(ControlRearPassengerDoor, HandlePulledBoundaryWithAllSafeInputsAllowsOpen) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
@@ -56,7 +55,7 @@ TEST(ControlRearPassengerDoor, HandlePulledBoundaryWithAllSafeInputsAllowsOpen) 
     EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
 }
 
-// Safety invalid must block even if handle is pulled.
+// [TC-UC02-004] 테스트 목적: 안전 조건 비유효 시 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, false, false, false, false, false);
@@ -64,7 +63,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Latch sensor error should block.
+// [TC-UC02-005] 테스트 목적: 래치 센서 오류(FMEA) 시 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, true, false, false, false);
@@ -72,7 +71,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// ECU error should block.
+// [TC-UC02-006] 테스트 목적: ECU 오류(FMEA) 시 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, true, false, false);
@@ -80,7 +79,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Power instability should block.
+// [TC-UC02-007] 테스트 목적: 전원 이상(FMEA) 시 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, true, false);
@@ -88,7 +87,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Child lock active should block.
+// [TC-UC02-008] 테스트 목적: 차일드락 활성 상태에서 도어 개방 차단 검증
 TEST(ControlRearPassengerDoor, BlocksWhenChildLockActive) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, true);
@@ -96,7 +95,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenChildLockActive) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// FMEA-oriented stress case: multiple concurrent faults must remain blocked.
+// [TC-UC02-009] 테스트 목적: 복수 고장 동시 입력 시 Fail-Safe 차단 유지 검증
 TEST(ControlRearPassengerDoor, BlocksWhenMultipleFaultsOccurTogether) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, false, true, true, true, true);

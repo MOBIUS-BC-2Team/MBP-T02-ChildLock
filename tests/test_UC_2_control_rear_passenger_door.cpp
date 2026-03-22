@@ -48,6 +48,14 @@ TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
+// Boundary case: handle pulled allows evaluation to continue.
+TEST(ControlRearPassengerDoor, HandlePulledBoundaryWithAllSafeInputsAllowsOpen) {
+    const DoorOpenStatus status =
+        EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
+
+    EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
+}
+
 // Safety invalid must block even if handle is pulled.
 TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     const DoorOpenStatus status =
@@ -84,6 +92,14 @@ TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
 TEST(ControlRearPassengerDoor, BlocksWhenChildLockActive) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, true);
+
+    EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
+}
+
+// FMEA-oriented stress case: multiple concurrent faults must remain blocked.
+TEST(ControlRearPassengerDoor, BlocksWhenMultipleFaultsOccurTogether) {
+    const DoorOpenStatus status =
+        EvaluateControlRearPassengerDoor(true, false, true, true, true, true);
 
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }

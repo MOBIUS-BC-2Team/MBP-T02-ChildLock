@@ -44,32 +44,49 @@ bool EvaluateReleaseDoorLatch(bool detect_rear_door_handle_pull,
 
 } /* namespace */
 
+// 테스트 목적: UC5EmergencyGuidance.KeepsLatchLockedWhenHandleIsIdle 동작 검증
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenHandleIsIdle)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, true, true));
 }
 
+// 테스트 목적: UC5EmergencyGuidance.ReleasesLatchWhenHandlePulledAndMainPowerAvailable 동작 검증
 TEST(UC5EmergencyGuidance, ReleasesLatchWhenHandlePulledAndMainPowerAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, false));
 }
 
+// 테스트 목적: UC5EmergencyGuidance.MainPowerDominatesEvenWhenBackupAlsoAvailable 동작 검증
 TEST(UC5EmergencyGuidance, MainPowerDominatesEvenWhenBackupAlsoAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, true));
 }
 
+// 테스트 목적: UC5EmergencyGuidance.DoesNotReleaseWhenOnlyBackupPowerIsAvailable 동작 검증
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenOnlyBackupPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, true));
 }
 
+// 테스트 목적: UC5EmergencyGuidance.DoesNotReleaseWhenNoPowerIsAvailable 동작 검증
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenNoPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, false));
 }
 
+// 테스트 목적: UC5EmergencyGuidance.KeepsLatchLockedWhenNoRequestAndNoPower 동작 검증
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenNoRequestAndNoPower)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, false, false));
+}
+
+// 테스트 목적: UC5EmergencyGuidance.BackupPowerToggleDoesNotChangeDecisionWhenMainPowerIsOn 동작 검증
+TEST(UC5EmergencyGuidance, BackupPowerToggleDoesNotChangeDecisionWhenMainPowerIsOn)
+{
+    const bool result_without_backup = EvaluateReleaseDoorLatch(true, true, false);
+    const bool result_with_backup = EvaluateReleaseDoorLatch(true, true, true);
+
+    EXPECT_TRUE(result_without_backup);
+    EXPECT_TRUE(result_with_backup);
+    EXPECT_EQ(result_without_backup, result_with_backup);
 }

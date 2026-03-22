@@ -44,6 +44,7 @@ ChildLockRequest MakeValidRequest()
     return request;
 }
 
+// 테스트 목적: ChildLockSystemHelpers.InitRequestSetsSafeDefaults 동작 검증
 TEST(ChildLockSystemHelpers, InitRequestSetsSafeDefaults)
 {
     ChildLockRequest request;
@@ -62,6 +63,7 @@ TEST(ChildLockSystemHelpers, InitRequestSetsSafeDefaults)
     EXPECT_EQ(CHILD_LOCK_APPLY_SUCCESS, request.apply_result);
 }
 
+// 테스트 목적: ChildLockSystemHelpers.InitResponseKeepsCurrentState 동작 검증
 TEST(ChildLockSystemHelpers, InitResponseKeepsCurrentState)
 {
     ChildLockResponse response;
@@ -78,29 +80,34 @@ TEST(ChildLockSystemHelpers, InitResponseKeepsCurrentState)
     EXPECT_FALSE(response.status_update_needed);
 }
 
+// 테스트 목적: ChildLockSystemHelpers.DoorValidationAcceptsRearDoors 동작 검증
 TEST(ChildLockSystemHelpers, DoorValidationAcceptsRearDoors)
 {
     EXPECT_TRUE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_RL));
     EXPECT_TRUE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_RR));
 }
 
+// 테스트 목적: ChildLockSystemHelpers.DoorValidationRejectsInvalidDoor 동작 검증
 TEST(ChildLockSystemHelpers, DoorValidationRejectsInvalidDoor)
 {
     EXPECT_FALSE(ChildLockSystem_IsDoorIdValid(CHILD_LOCK_DOOR_INVALID));
 }
 
+// 테스트 목적: ChildLockSystemHelpers.ToggleStateTurnsOffToOn 동작 검증
 TEST(ChildLockSystemHelpers, ToggleStateTurnsOffToOn)
 {
     EXPECT_EQ(CHILD_LOCK_STATE_ON,
               ChildLockSystem_ToggleState(CHILD_LOCK_STATE_OFF));
 }
 
+// 테스트 목적: ChildLockSystemHelpers.ToggleStateTurnsOnToOff 동작 검증
 TEST(ChildLockSystemHelpers, ToggleStateTurnsOnToOff)
 {
     EXPECT_EQ(CHILD_LOCK_STATE_OFF,
               ChildLockSystem_ToggleState(CHILD_LOCK_STATE_ON));
 }
 
+// 테스트 목적: ChildLockSystemProcess.RejectsNullRequest 동작 검증
 TEST(ChildLockSystemProcess, RejectsNullRequest)
 {
     ChildLockResponse response;
@@ -113,6 +120,7 @@ TEST(ChildLockSystemProcess, RejectsNullRequest)
     EXPECT_FALSE(response.command_sent);
 }
 
+// 테스트 목적: ChildLockSystemProcess.RejectsNullResponse 동작 검증
 TEST(ChildLockSystemProcess, RejectsNullResponse)
 {
     const ChildLockRequest request = MakeValidRequest();
@@ -121,6 +129,7 @@ TEST(ChildLockSystemProcess, RejectsNullResponse)
               ChildLockSystem_ProcessRequest(&request, nullptr));
 }
 
+// 테스트 목적: ChildLockSystemProcess.RejectsInvalidDoor 동작 검증
 TEST(ChildLockSystemProcess, RejectsInvalidDoor)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -135,6 +144,7 @@ TEST(ChildLockSystemProcess, RejectsInvalidDoor)
     EXPECT_STREQ("지원하지 않는 도어입니다.", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.BlocksAccOff 동작 검증
 TEST(ChildLockSystemProcess, BlocksAccOff)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -149,6 +159,7 @@ TEST(ChildLockSystemProcess, BlocksAccOff)
     EXPECT_STREQ("ACC OFF: 설정 변경 불가", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsNonZero 동작 검증
 TEST(ChildLockSystemProcess, BlocksWhenSpeedIsNonZero)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -163,6 +174,36 @@ TEST(ChildLockSystemProcess, BlocksWhenSpeedIsNonZero)
     EXPECT_STREQ("정차 후 변경 가능", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsOneBoundary 동작 검증
+TEST(ChildLockSystemProcess, BlocksWhenSpeedIsOneBoundary)
+{
+    ChildLockRequest request = MakeValidRequest();
+    ChildLockResponse response;
+
+    request.speed_kph = 1U;
+
+    EXPECT_EQ(CHILD_LOCK_RESULT_BLOCKED_SPEED,
+              ChildLockSystem_ProcessRequest(&request, &response));
+    EXPECT_EQ(CHILD_LOCK_STATE_OFF, response.new_child_lock_state);
+    EXPECT_FALSE(response.command_sent);
+    EXPECT_STREQ("정차 후 변경 가능", response.display_message);
+}
+
+// 테스트 목적: ChildLockSystemProcess.BlocksWhenSpeedIsUint16MaxBoundary 동작 검증
+TEST(ChildLockSystemProcess, BlocksWhenSpeedIsUint16MaxBoundary)
+{
+    ChildLockRequest request = MakeValidRequest();
+    ChildLockResponse response;
+
+    request.speed_kph = 65535U;
+
+    EXPECT_EQ(CHILD_LOCK_RESULT_BLOCKED_SPEED,
+              ChildLockSystem_ProcessRequest(&request, &response));
+    EXPECT_EQ(CHILD_LOCK_STATE_OFF, response.new_child_lock_state);
+    EXPECT_FALSE(response.command_sent);
+}
+
+// 테스트 목적: ChildLockSystemProcess.BlocksOnCrashOverride 동작 검증
 TEST(ChildLockSystemProcess, BlocksOnCrashOverride)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -178,6 +219,7 @@ TEST(ChildLockSystemProcess, BlocksOnCrashOverride)
                  response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.BlocksOnPowerLoss 동작 검증
 TEST(ChildLockSystemProcess, BlocksOnPowerLoss)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -192,6 +234,7 @@ TEST(ChildLockSystemProcess, BlocksOnPowerLoss)
     EXPECT_STREQ("전원 불안정: 설정 변경 불가", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.SucceedsForSafeLockEnable 동작 검증
 TEST(ChildLockSystemProcess, SucceedsForSafeLockEnable)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -207,6 +250,7 @@ TEST(ChildLockSystemProcess, SucceedsForSafeLockEnable)
     EXPECT_EQ(nullptr, response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.RequiresReconfirmationForRiskyUnlock 동작 검증
 TEST(ChildLockSystemProcess, RequiresReconfirmationForRiskyUnlock)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -225,6 +269,7 @@ TEST(ChildLockSystemProcess, RequiresReconfirmationForRiskyUnlock)
     EXPECT_STREQ("후석 접근 감지: 재조작시 해제", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.AllowsRiskyUnlockAfterReconfirm 동작 검증
 TEST(ChildLockSystemProcess, AllowsRiskyUnlockAfterReconfirm)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -242,6 +287,7 @@ TEST(ChildLockSystemProcess, AllowsRiskyUnlockAfterReconfirm)
     EXPECT_TRUE(response.status_update_needed);
 }
 
+// 테스트 목적: ChildLockSystemProcess.AllowsRiskStateWhenTargetIsOn 동작 검증
 TEST(ChildLockSystemProcess, AllowsRiskStateWhenTargetIsOn)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -256,6 +302,7 @@ TEST(ChildLockSystemProcess, AllowsRiskStateWhenTargetIsOn)
     EXPECT_TRUE(response.command_sent);
 }
 
+// 테스트 목적: ChildLockSystemProcess.ReportsApplyFail 동작 검증
 TEST(ChildLockSystemProcess, ReportsApplyFail)
 {
     ChildLockRequest request = MakeValidRequest();
@@ -273,6 +320,7 @@ TEST(ChildLockSystemProcess, ReportsApplyFail)
     EXPECT_STREQ("설정 실패 (도어 장치 오류)", response.display_message);
 }
 
+// 테스트 목적: ChildLockSystemProcess.ReportsApplyTimeout 동작 검증
 TEST(ChildLockSystemProcess, ReportsApplyTimeout)
 {
     ChildLockRequest request = MakeValidRequest();

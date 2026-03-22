@@ -1,18 +1,8 @@
-/**
+﻿/**
  * @file test_UC_5_Emergency_Guidance.cpp
- * @brief GoogleTest unit tests for UC05 emergency guidance latch logic.
+ * @brief UC-05 emergency guidance latch-decision unit tests.
  * @details
- * This test suite validates the UC05 decision output for normal and
- * power-loss conditions. Product code remains C11, while test code follows
- * C++14 with GoogleTest 1.12.1 from the project toolchain.
- *
- * Static analysis expectation:
- * - Product module is checked with cppcheck 2.10.
- *
- * Implemented Date: 2026-03-20
- * Implemented Time: 02:26:00 KST
- * Implemented Model: GPT-5 Codex
- * Version: v1.0
+ * Test-case traceability is synchronized with doc/TestCase.md.
  */
 
 #include <gtest/gtest.h>
@@ -26,11 +16,7 @@ namespace
 {
 
 /**
- * @brief Wrapper to keep each test focused on behavior.
- * @param detect_rear_door_handle_pull True when the rear inside handle is pulled.
- * @param is_main_power_available True when main power is available.
- * @param is_backup_power_available True when backup power is available.
- * @return True if ECU should release latch electronically.
+ * @brief Small wrapper to keep test bodies focused on expected behavior.
  */
 bool EvaluateReleaseDoorLatch(bool detect_rear_door_handle_pull,
                               bool is_main_power_available,
@@ -44,43 +30,43 @@ bool EvaluateReleaseDoorLatch(bool detect_rear_door_handle_pull,
 
 } /* namespace */
 
-// [TC-UC05-001] 테스트 목적: 핸들 요청이 없을 때 전자 래치 해제 금지 검증
+// [TC_UC05_004] Handle idle must keep the electronic latch locked.
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenHandleIsIdle)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, true, true));
 }
 
-// [TC-UC05-002] 테스트 목적: 핸들 요청 + 메인 전원 정상 시 래치 해제 허용 검증
+// [TC_UC05_001] Handle request + main power available allows electronic release.
 TEST(UC5EmergencyGuidance, ReleasesLatchWhenHandlePulledAndMainPowerAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, false));
 }
 
-// [TC-UC05-005] 테스트 목적: 백업 전원 유무와 무관한 메인 전원 우선 동작 검증
+// [TC_NA] Regression guard: main power path remains true even with backup available.
 TEST(UC5EmergencyGuidance, MainPowerDominatesEvenWhenBackupAlsoAvailable)
 {
     EXPECT_TRUE(EvaluateReleaseDoorLatch(true, true, true));
 }
 
-// [TC-UC05-003] 테스트 목적: 메인 전원 상실 + 백업 전원만 존재 시 해제 금지 검증
+// [TC_UC05_002] Main power loss + backup only does not allow electronic release.
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenOnlyBackupPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, true));
 }
 
-// [TC-UC05-004] 테스트 목적: 전체 전원 상실 시 전자 래치 해제 금지 검증
+// [TC_UC05_003] Total power loss does not allow electronic release.
 TEST(UC5EmergencyGuidance, DoesNotReleaseWhenNoPowerIsAvailable)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(true, false, false));
 }
 
-// [TC-UC05-006] 테스트 목적: 핸들 미요청 경계에서 즉시 해제 금지 검증
+// [TC_UC05_004] No request branch remains false regardless of power state.
 TEST(UC5EmergencyGuidance, KeepsLatchLockedWhenNoRequestAndNoPower)
 {
     EXPECT_FALSE(EvaluateReleaseDoorLatch(false, false, false));
 }
 
-// [TC-UC05-007] 테스트 목적: 메인 전원 정상 시 백업 전원 토글 불변성 검증
+// [TC_NA] Regression guard: toggling backup power does not change main-power decision.
 TEST(UC5EmergencyGuidance, BackupPowerToggleDoesNotChangeDecisionWhenMainPowerIsOn)
 {
     const bool result_without_backup = EvaluateReleaseDoorLatch(true, true, false);

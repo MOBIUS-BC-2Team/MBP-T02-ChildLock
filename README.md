@@ -49,9 +49,6 @@
 * Inside Handle(내부 손잡이)의 물리적 연결을 차단 또는 허용
 * 주행 안전 확보를 위한 **안전 상태(Fail-safe) 고려**
 
-> ⚠️ 본 프로젝트에서는 **‘전자식 잠금/해제’ 기능을 기본 기능으로 설정**하며,
-> 추가 시스템 기능 및 확장 요구사항은 실습 과정에서 점진적으로 정의합니다.
-
 ---
 
 ## 🧩 프로젝트 범위
@@ -84,10 +81,8 @@
    * C/C++ 기반 기능 구현
    * Google Test 기반 단위 테스트
    * Cppcheck 정적 분석
-
-6. **추적성 관리**
-
-   * 요구사항 ↔ 설계 ↔ 코드 ↔ 테스트 간 Traceability 확보
+   * Cloc 라인 커버리지 분석
+   * Lizard 순환 복잡도 분석
 
 ---
 
@@ -119,15 +114,15 @@
 
 ---
 
-## 📂 Repository 구성 (예정)
+## 📂 Repository 구성
 
 ```
 📦 Electronic-Child-Lock-System
- ┣ 📂 docs            # 프로젝트 문서 (설계, 분석)
- ┣ 📂 wiki            # GitHub Wiki 기반 산출물
- ┣ 📂 src             # 소프트웨어 소스 코드
- ┣ 📂 test            # 단위 테스트 코드
- ┣ 📂 ci              # CI 설정 파일
+ ┣ 📂 docs                    # 프로젝트 문서 (설계, 분석)
+ ┣ 📂 include                 # 소스 코드 헤더
+ ┣ 📂 src                     # 소프트웨어 소스 코드
+ ┣ 📂 test                    # 단위 테스트 코드
+ ┣ 📂 .github/workflows       # CI 설정 파일
  ┣ 📜 README.md
 ```
 
@@ -137,13 +132,10 @@
 
 본 프로젝트의 주요 산출물은 **GitHub Wiki**를 통해 관리합니다.
 
-* System Benchmark & Analysis
-* User Requirement Specification
-* Functional Safety Analysis (FMEA / HAZOP)
-* UML 설계 산출물
-* Traceability Matrix
-
-📌 **Wiki는 프로젝트 진행 단계별로 지속적으로 업데이트됩니다.**
+* [System Benchmark & Analysis](https://github.com/MOBIUS-BC-2Team/MBP-T02-ChildLock/wiki/System_Benchmark_and_Analysys)
+* [User Requirement Specification](https://github.com/MOBIUS-BC-2Team/MBP-T02-ChildLock/wiki/SwRS%28Software-Requirement-Specification%29)
+* [Functional Safety Analysis (FMEA / HAZOP)](https://github.com/MOBIUS-BC-2Team/MBP-T02-ChildLock/wiki/SwRS%28Software-Requirement-Specification%2C-FMEA%29)
+* [UML 설계 산출물](https://github.com/MOBIUS-BC-2Team/MBP-T02-ChildLock/tree/main/doc/uml_diagram)
 
 ---
 

@@ -58,6 +58,15 @@ jobs:
             make loc
           "
 
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ github.run_id }}
+          path: build/coverage/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Stop and clean containers
         if: always()
         run: docker compose down --volumes --remove-orphans

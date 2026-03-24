@@ -1,10 +1,8 @@
-/**
+﻿/**
  * @file test_UC_2_control_rear_passenger_door.cpp
- * @brief Unit tests for UC-2 based rear passenger door control logic.
- * @date 2026-03-15
- * @time 15:46:22
- * @model MBP-T02-ChildLock
- * @version v1.0
+ * @brief UC-02 rear passenger door control unit tests.
+ * @details
+ * Test-case traceability is synchronized with doc/TestCase.md.
  */
 
 #include "UC_2_control_rear_passenger_door.h"
@@ -13,8 +11,7 @@
 
 namespace {
 
-// Helper to keep test bodies concise and focused on expectations.
-// Note: inputs are modeled as booleans to match the UC-2 flowchart decisions.
+// Helper used to keep each test focused on one decision branch.
 static DoorOpenStatus EvaluateControlRearPassengerDoor(bool is_handle_pulled,
                                                        bool is_safety_valid,
                                                        bool is_latch_sensor_error,
@@ -31,8 +28,7 @@ static DoorOpenStatus EvaluateControlRearPassengerDoor(bool is_handle_pulled,
 
 }  // namespace
 
-// Each test toggles one condition to ensure independent blocking behavior.
-// Normal case: all conditions valid and child lock off should allow opening.
+// [TC_UC02_001] Normal open path when all safety inputs are valid.
 TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
@@ -40,7 +36,7 @@ TEST(ControlRearPassengerDoor, AllowsOpenWhenAllConditionsOkAndChildLockOff) {
     EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
 }
 
-// Edge case: handle not pulled always blocks.
+// [TC_UC02_007] No-handle-request path must remain blocked.
 TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(false, true, false, false, false, false);
@@ -48,7 +44,15 @@ TEST(ControlRearPassengerDoor, BlocksWhenHandleNotPulled) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Safety invalid must block even if handle is pulled.
+// [TC_UC02_008] Handle boundary case (true) with safe conditions allows open.
+TEST(ControlRearPassengerDoor, HandlePulledBoundaryWithAllSafeInputsAllowsOpen) {
+    const DoorOpenStatus status =
+        EvaluateControlRearPassengerDoor(true, true, false, false, false, false);
+
+    EXPECT_EQ(status, DOOR_OPEN_ALLOWED);
+}
+
+// [TC_UC02_003] Safety-invalid input must block opening.
 TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, false, false, false, false, false);
@@ -56,7 +60,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenSafetyInvalid) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Latch sensor error should block.
+// [TC_UC02_004] Latch sensor error (FMEA) must block opening.
 TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, true, false, false, false);
@@ -64,7 +68,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenLatchSensorError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// ECU error should block.
+// [TC_UC02_005] ECU error (FMEA) must block opening.
 TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, true, false, false);
@@ -72,7 +76,7 @@ TEST(ControlRearPassengerDoor, BlocksWhenEcuError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Power instability should block.
+// [TC_UC02_006] Power instability (FMEA) must block opening.
 TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, true, false);
@@ -80,10 +84,18 @@ TEST(ControlRearPassengerDoor, BlocksWhenPowerError) {
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
 
-// Child lock active should block.
+// [TC_UC02_002] Active child-lock must block opening.
 TEST(ControlRearPassengerDoor, BlocksWhenChildLockActive) {
     const DoorOpenStatus status =
         EvaluateControlRearPassengerDoor(true, true, false, false, false, true);
+
+    EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
+}
+
+// [TC_UC02_009] Multiple simultaneous faults must still fail-safe to blocked.
+TEST(ControlRearPassengerDoor, BlocksWhenMultipleFaultsOccurTogether) {
+    const DoorOpenStatus status =
+        EvaluateControlRearPassengerDoor(true, false, true, true, true, true);
 
     EXPECT_EQ(status, DOOR_OPEN_BLOCKED);
 }
